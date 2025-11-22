@@ -52,6 +52,11 @@ def main() -> None:
         div[title="Manage app"] {
             display: none !important;
         }
+        /* Ocultar botones superiores (share, star, edit, github, menu 3 puntos) manteniendo el toggle de la barra lateral */
+        header [data-testid="stToolbar"] { display: none !important; }
+        header [data-testid="stDecoration"] { display: none !important; }
+        header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
+        header button[kind="headerMenu"] { display: none !important; }
         </style>
         """,
         unsafe_allow_html=True,
