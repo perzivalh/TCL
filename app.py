@@ -52,32 +52,29 @@ def main() -> None:
         div[title="Manage app"] {
             display: none !important;
         }
-        /* Mantener solo el toggle de la barra lateral, ocultar otros botones del header */
-        header [data-testid="stToolbar"] {
+        /* Ocultar toolbar superior completa (share, star, edit, github, menu) */
+        header [data-testid="stToolbar"],
+        header [data-testid="stDecoration"],
+        header [data-testid="stHeader"] div:nth-child(2) {
+            display: none !important;
+        }
+        /* Boton flotante para colapsar/mostrar barra lateral */
+        div[data-testid="collapsedControl"] {
             position: fixed;
             top: 50%;
-            left: 0.2rem;
+            left: 0;
             transform: translate(-40%, -50%);
             z-index: 1000;
-            background: transparent;
-            box-shadow: none;
-        }
-        header [data-testid="stToolbar"] button {
             background: #142036;
-            color: #e8eef7;
             border: 1px solid #22365a;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
         }
-        header [data-testid="stToolbar"] button:not(:first-child) {
-            display: none !important; /* oculta share, editar, github, etc. */
+        div[data-testid="collapsedControl"] button {
+            color: #e8eef7;
+            background: transparent;
+            padding: 0.45rem 0.6rem;
         }
-        header [data-testid="stToolbar"] button:first-child {
-            border-radius: 0 10px 10px 0;
-            padding: 0.35rem 0.55rem;
-            transform: translateX(-15%);
-        }
-        header [data-testid="stDecoration"] { display: none !important; }
-        header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
         </style>
         """,
         unsafe_allow_html=True,
