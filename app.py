@@ -45,6 +45,12 @@ def main() -> None:
                 width: 100% !important;
             }
         }
+        /* Ocultar iconos de cabecera y badge inferior (si existen) excepto el menu de tres puntos */
+        header [data-testid="stToolbar"] { display: none !important; }
+        header [data-testid="stDecoration"] { display: none !important; }
+        header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
+        footer { display: none !important; }
+        div[data-testid="stStatusWidget"] { display: none !important; }
         </style>
         """,
         unsafe_allow_html=True,

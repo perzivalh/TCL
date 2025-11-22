@@ -40,13 +40,6 @@ def _binomial_controls() -> Dict[str, float]:
 
 
 def render_sidebar_controls() -> Tuple[str, Dict[str, float], int, int, int]:
-    st.sidebar.header("Controles")
-    st.sidebar.markdown(
-        "- `n` controla el tamano de cada muestra; al aumentar n, las medias se concentran mas.\n"
-        "- `k` es el numero de simulaciones; mas repeticiones suavizan el histograma.\n"
-        "- La forma original puede ser sesgada, pero las medias tienden a la normalidad (TCL)."
-    )
-
     dist_name = st.sidebar.selectbox(
         "Distribucion poblacional",
         ["Uniforme", "Exponencial", "Binomial"],
@@ -84,9 +77,5 @@ def render_sidebar_controls() -> Tuple[str, Dict[str, float], int, int, int]:
         100000,
         step=5000,
         help="Cantidad de datos sinteticos para visualizar la distribucion original.",
-    )
-
-    st.sidebar.markdown(
-        "Consejo: aunque la poblacion sea asimetrica, al incrementar `n` veras que las medias se acercan a la curva normal."
     )
     return dist_name, dist_params, sample_size, n_simulations, population_size
