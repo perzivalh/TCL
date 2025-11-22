@@ -52,11 +52,32 @@ def main() -> None:
         div[title="Manage app"] {
             display: none !important;
         }
-        /* Ocultar botones superiores (share, star, edit, github, menu 3 puntos) manteniendo el toggle de la barra lateral */
-        header [data-testid="stToolbar"] { display: none !important; }
+        /* Mantener solo el toggle de la barra lateral, ocultar otros botones del header */
+        header [data-testid="stToolbar"] {
+            position: fixed;
+            top: 50%;
+            left: 0.2rem;
+            transform: translate(-40%, -50%);
+            z-index: 1000;
+            background: transparent;
+            box-shadow: none;
+        }
+        header [data-testid="stToolbar"] button {
+            background: #142036;
+            color: #e8eef7;
+            border: 1px solid #22365a;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        }
+        header [data-testid="stToolbar"] button:not(:first-child) {
+            display: none !important; /* oculta share, editar, github, etc. */
+        }
+        header [data-testid="stToolbar"] button:first-child {
+            border-radius: 0 10px 10px 0;
+            padding: 0.35rem 0.55rem;
+            transform: translateX(-15%);
+        }
         header [data-testid="stDecoration"] { display: none !important; }
         header [data-testid="stHeader"] div:nth-child(2) { display: none !important; }
-        header button[kind="headerMenu"] { display: none !important; }
         </style>
         """,
         unsafe_allow_html=True,
