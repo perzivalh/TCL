@@ -12,10 +12,10 @@ def render_header() -> None:
     )
 
 
-def _uniform_controls() -> Dict[str, float]:
-    st.subheader("Parametros Uniforme")
-    a = st.slider("Limite inferior (a)", -10.0, 10.0, 0.0, step=0.5, help="Valor minimo de la distribucion.")
-    b = st.slider(
+def _uniform_controls(container) -> Dict[str, float]:
+    container.subheader("Parametros Uniforme")
+    a = container.slider("Limite inferior (a)", -10.0, 10.0, 0.0, step=0.5, help="Valor minimo de la distribucion.")
+    b = container.slider(
         "Limite superior (b)",
         a + 0.5,
         20.0,
@@ -26,35 +26,37 @@ def _uniform_controls() -> Dict[str, float]:
     return {"a": float(a), "b": float(b)}
 
 
-def _exponential_controls() -> Dict[str, float]:
-    st.subheader("Parametros Exponencial")
-    lam = st.slider("Tasa (lambda)", 0.1, 5.0, 1.0, step=0.1, help="Mayor lambda implica colas mas cortas.")
+def _exponential_controls(container) -> Dict[str, float]:
+    container.subheader("Parametros Exponencial")
+    lam = container.slider("Tasa (lambda)", 0.1, 5.0, 1.0, step=0.1, help="Mayor lambda implica colas mas cortas.")
     return {"lam": float(lam)}
 
 
-def _binomial_controls() -> Dict[str, float]:
-    st.subheader("Parametros Binomial")
-    n_trials = st.slider("Numero de ensayos (n)", 1, 60, 20, step=1, help="Cantidad de ensayos por prueba.")
-    p = st.slider("Probabilidad de exito (p)", 0.01, 0.99, 0.5, step=0.01, help="Probabilidad en cada ensayo.")
+def _binomial_controls(container) -> Dict[str, float]:
+    container.subheader("Parametros Binomial")
+    n_trials = container.slider("Numero de ensayos (n)", 1, 60, 20, step=1, help="Cantidad de ensayos por prueba.")
+    p = container.slider("Probabilidad de exito (p)", 0.01, 0.99, 0.5, step=0.01, help="Probabilidad en cada ensayo.")
     return {"n_trials": int(n_trials), "p": float(p)}
 
 
-def render_sidebar_controls() -> Tuple[str, Dict[str, float], int, int, int]:
-    dist_name = st.sidebar.selectbox(
+def render_controls(container=None) -> Tuple[str, Dict[str, float], int, int, int]:
+    """Renderiza controles en el contenedor dado (sidebar o panel custom)."""
+    target = container if container is not None else st.sidebar
+
+    dist_name = target.selectbox(
         "Distribucion poblacional",
         ["Uniforme", "Exponencial", "Binomial"],
         help="Elige la forma base de la poblacion.",
     )
 
-    with st.sidebar:
-        if dist_name == "Uniforme":
-            dist_params = _uniform_controls()
-        elif dist_name == "Exponencial":
-            dist_params = _exponential_controls()
-        else:
-            dist_params = _binomial_controls()
+    if dist_name == "Uniforme":
+        dist_params = _uniform_controls(target)
+    elif dist_name == "Exponencial":
+        dist_params = _exponential_controls(target)
+    else:
+        dist_params = _binomial_controls(target)
 
-    sample_size = st.sidebar.slider(
+    sample_size = target.slider(
         "Tamano de la muestra (n)",
         5,
         500,
@@ -62,7 +64,7 @@ def render_sidebar_controls() -> Tuple[str, Dict[str, float], int, int, int]:
         step=5,
         help="Medias de muestras mas grandes tienen menor dispersion (error estandar menor).",
     )
-    n_simulations = st.sidebar.slider(
+    n_simulations = target.slider(
         "Numero de simulaciones (k)",
         100,
         5000,
@@ -70,7 +72,7 @@ def render_sidebar_controls() -> Tuple[str, Dict[str, float], int, int, int]:
         step=100,
         help="Cuantas medias muestrales se generan para el histograma.",
     )
-    population_size = st.sidebar.slider(
+    population_size = target.slider(
         "Tamano de poblacion para graficar",
         5000,
         200000,

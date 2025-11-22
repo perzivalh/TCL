@@ -3,7 +3,7 @@ import streamlit as st
 from core.metrics import compute_differences, compute_empirical_stats, compute_theoretical_stats
 from core.simulation import generate_population, simulate_sample_means
 from core.visualization import plot_population_hist, plot_sample_means_hist
-from utils.layout import render_header, render_sidebar_controls
+from utils.layout import render_controls, render_header
 
 
 def main() -> None:
@@ -20,11 +20,7 @@ def main() -> None:
             padding-left: 1.25rem;
             padding-right: 1.25rem;
         }
-        /* Graficos y columnas responsivas */
         @media (max-width: 900px) {
-            section[data-testid="stSidebar"] {
-                width: 16rem !important;
-            }
             .block-container {
                 padding-left: 1rem;
                 padding-right: 1rem;
@@ -41,95 +37,62 @@ def main() -> None:
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
             }
-            section[data-testid="stSidebar"] {
-                width: 100% !important;
-            }
         }
-        /* Transicion y clase para ocultar/mostrar la barra lateral */
-        section[data-testid="stSidebar"] {
-            transition: transform 0.35s ease, opacity 0.35s ease;
-            will-change: transform, opacity;
-            z-index: 1001;
+        .controls-panel {
+            background: #111927;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #1f2d40;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
         }
-        section[data-testid="stSidebar"].custom-sidebar-hidden {
-            transform: translateX(-110%);
-            opacity: 0;
-            pointer-events: none;
-        }
-        /* Boton flotante propio para colapsar/mostrar la barra lateral */
-        .sidebar-toggle-btn {
-            position: fixed;
-            top: 50%;
-            left: 0;
-            transform: translate(-35%, -50%);
-            z-index: 1200;
+        .controls-toggle-btn {
             background: #142036;
-            border: 1px solid #22365a;
-            border-radius: 0 12px 12px 0;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
             color: #e8eef7;
-            padding: 0.35rem 0.55rem;
+            border: 1px solid #22365a;
+            border-radius: 10px;
+            padding: 0.4rem 0.8rem;
             cursor: pointer;
-            display: none; /* se muestra via JS al encontrar el sidebar */
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
         }
-        .sidebar-toggle-btn:hover {
-            background: #1b2e4a;
-        }
-        /* Ocultar badge/boton de estado (Manage app) en la esquina inferior derecha */
+        .controls-toggle-btn:hover { background: #1b2e4a; }
         div[data-testid="stStatusWidget"],
         button[title*="Manage"],
         a[title*="Manage"],
-        div[title*="Manage"] {
-            display: none !important;
-        }
-        /* Ocultar toolbar superior completa (share, estrella, etc.), pero dejar control de barra lateral aparte */
-        header [data-testid="stToolbar"] {
-            display: none !important;
-        }
+        div[title*="Manage"] { display: none !important; }
+        header [data-testid="stToolbar"] { display: none !important; }
         </style>
         """,
         unsafe_allow_html=True,
     )
-    st.markdown(
-        """
-        <button id="custom-sidebar-toggle" class="sidebar-toggle-btn" aria-label="Mostrar u ocultar barra lateral">‹</button>
-        <script>
-        (function() {
-            function findSidebar() {
-                return window.parent.document.querySelector('section[data-testid="stSidebar"]');
-            }
-            function toggleSidebar() {
-                const sidebar = findSidebar();
-                const btn = window.parent.document.getElementById('custom-sidebar-toggle');
-                if (!sidebar || !btn) return;
-                sidebar.classList.toggle('custom-sidebar-hidden');
-                const hidden = sidebar.classList.contains('custom-sidebar-hidden');
-                btn.textContent = hidden ? '›' : '‹';
-            }
-            function initToggle() {
-                const btn = window.parent.document.getElementById('custom-sidebar-toggle');
-                const sidebar = findSidebar();
-                if (!btn || !sidebar) {
-                    setTimeout(initToggle, 400);
-                    return;
-                }
-                btn.style.display = 'flex';
-                btn.onclick = toggleSidebar;
-            }
-            initToggle();
-        })();
-        </script>
-        """,
-        unsafe_allow_html=True,
-    )
-    render_header()
 
+    if "show_controls" not in st.session_state:
+        st.session_state["show_controls"] = True
+    if "controls_values" not in st.session_state:
+        st.session_state["controls_values"] = None
+
+    toggle_label = "Ocultar controles ◀" if st.session_state["show_controls"] else "Mostrar controles ▶"
+    if st.button(toggle_label, key="toggle_controls", help="Mostrar/ocultar panel de controles"):
+        st.session_state["show_controls"] = not st.session_state["show_controls"]
+
+    render_header()
     st.info(
         "Selecciona la distribucion y sus parametros, luego ejecuta la simulacion. "
         "Veras la poblacion sintetica y como las medias muestrales se aproximan a una curva normal."
     )
 
-    dist_name, dist_params, sample_size, n_simulations, population_size = render_sidebar_controls()
+    if st.session_state["show_controls"]:
+        ctrl_col, main_col = st.columns([1.1, 2.2])
+        with ctrl_col:
+            st.markdown('<div class="controls-panel">', unsafe_allow_html=True)
+            dist_name, dist_params, sample_size, n_simulations, population_size = render_controls(st)
+            st.session_state["controls_values"] = (dist_name, dist_params, sample_size, n_simulations, population_size)
+            st.markdown("</div>", unsafe_allow_html=True)
+    else:
+        main_col = st.container()
+        if st.session_state["controls_values"] is None:
+            st.warning("Muestra el panel de controles al menos una vez para inicializar parametros.")
+            return
+        dist_name, dist_params, sample_size, n_simulations, population_size = st.session_state["controls_values"]
 
     with st.spinner("Actualizando simulacion..."):
         population = generate_population(dist_name, dist_params, population_size)
