@@ -20,6 +20,15 @@ def main() -> None:
             padding-left: 1.25rem;
             padding-right: 1.25rem;
         }
+        /* Barra lateral fija, sin colapso */
+        section[data-testid="stSidebar"] {
+            min-width: 15rem;
+            max-width: 22rem;
+            padding-bottom: 2rem;
+            overflow-y: auto;
+        }
+        div[data-testid="collapsedControl"] { display: none !important; }
+
         @media (max-width: 900px) {
             .block-container {
                 padding-left: 1rem;
@@ -37,42 +46,24 @@ def main() -> None:
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
             }
+            section[data-testid="stSidebar"] {
+                width: 100% !important;
+                max-width: none;
+                min-width: 0;
+                position: relative;
+            }
         }
-        .controls-panel {
-            background: #111927;
-            padding: 1rem;
-            border-radius: 12px;
-            border: 1px solid #1f2d40;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-        }
-        .controls-toggle-btn {
-            background: #142036;
-            color: #e8eef7;
-            border: 1px solid #22365a;
-            border-radius: 10px;
-            padding: 0.4rem 0.8rem;
-            cursor: pointer;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-        }
-        .controls-toggle-btn:hover { background: #1b2e4a; }
+        /* Ocultar badge/boton de estado (Manage app) en la esquina inferior derecha */
         div[data-testid="stStatusWidget"],
         button[title*="Manage"],
         a[title*="Manage"],
         div[title*="Manage"] { display: none !important; }
+        /* Ocultar toolbar superior (share, estrella, etc.) */
         header [data-testid="stToolbar"] { display: none !important; }
         </style>
         """,
         unsafe_allow_html=True,
     )
-
-    if "show_controls" not in st.session_state:
-        st.session_state["show_controls"] = True
-    if "controls_values" not in st.session_state:
-        st.session_state["controls_values"] = None
-
-    toggle_label = "Ocultar controles ◀" if st.session_state["show_controls"] else "Mostrar controles ▶"
-    if st.button(toggle_label, key="toggle_controls", help="Mostrar/ocultar panel de controles"):
-        st.session_state["show_controls"] = not st.session_state["show_controls"]
 
     render_header()
     st.info(
@@ -80,19 +71,8 @@ def main() -> None:
         "Veras la poblacion sintetica y como las medias muestrales se aproximan a una curva normal."
     )
 
-    if st.session_state["show_controls"]:
-        ctrl_col, main_col = st.columns([1.1, 2.2])
-        with ctrl_col:
-            st.markdown('<div class="controls-panel">', unsafe_allow_html=True)
-            dist_name, dist_params, sample_size, n_simulations, population_size = render_controls(st)
-            st.session_state["controls_values"] = (dist_name, dist_params, sample_size, n_simulations, population_size)
-            st.markdown("</div>", unsafe_allow_html=True)
-    else:
-        main_col = st.container()
-        if st.session_state["controls_values"] is None:
-            st.warning("Muestra el panel de controles al menos una vez para inicializar parametros.")
-            return
-        dist_name, dist_params, sample_size, n_simulations, population_size = st.session_state["controls_values"]
+    # Controles en la barra lateral nativa
+    dist_name, dist_params, sample_size, n_simulations, population_size = render_controls()
 
     with st.spinner("Actualizando simulacion..."):
         population = generate_population(dist_name, dist_params, population_size)
