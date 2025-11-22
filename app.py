@@ -45,6 +45,35 @@ def main() -> None:
                 width: 100% !important;
             }
         }
+        /* Transicion para mostrar/ocultar barra lateral desde un boton propio */
+        section[data-testid="stSidebar"] {
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            will-change: transform, opacity;
+            z-index: 1001;
+        }
+        section[data-testid="stSidebar"].custom-sidebar-hidden {
+            transform: translateX(-110%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Boton flotante propio para colapsar/mostrar la barra lateral */
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translate(-35%, -50%);
+            z-index: 1200;
+            background: #142036;
+            border: 1px solid #22365a;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            color: #e8eef7;
+            padding: 0.45rem 0.6rem;
+            cursor: pointer;
+        }
+        .sidebar-toggle-btn:hover {
+            background: #1b2e4a;
+        }
         /* Ocultar badge/boton de estado (Manage app) en la esquina inferior derecha */
         div[data-testid="stStatusWidget"],
         button[title*="Manage"],
@@ -52,37 +81,27 @@ def main() -> None:
         div[title*="Manage"] {
             display: none !important;
         }
-        /* Ocultar botones de share/editar/github/favoritos en la barra superior; mantener el toggle de la barra lateral */
-        header [data-testid="stToolbar"] button[title*="Share"],
-        header [data-testid="stToolbar"] button[title*="GitHub"],
-        header [data-testid="stToolbar"] button[title*="edit"],
-        header [data-testid="stToolbar"] button[title*="Edit"],
-        header [data-testid="stToolbar"] button[title*="favor"],
-        header [data-testid="stToolbar"] button[title*="Favor"] {
+        /* Ocultar toolbar superior completa (share, estrella, etc.) */
+        header [data-testid="stToolbar"] {
             display: none !important;
         }
-        /* Asegurar que el control de colapso de la barra lateral sea visible */
-        div[data-testid="collapsedControl"] {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            top: 50%;
-            left: 0;
-            transform: translate(-35%, -50%);
-            z-index: 1000;
-            background: #142036;
-            border: 1px solid #22365a;
-            border-radius: 0 12px 12px 0;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-            padding: 0.15rem;
-        }
-        div[data-testid="collapsedControl"] button {
-            color: #e8eef7;
-            background: transparent;
-            padding: 0.45rem 0.6rem;
-        }
         </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <button class="sidebar-toggle-btn" onclick="window.toggleSidebar && window.toggleSidebar()" aria-label="Mostrar u ocultar barra lateral">≡</button>
+        <script>
+        (function() {
+            const root = window.parent.document;
+            window.toggleSidebar = function() {
+                const sidebar = root.querySelector('section[data-testid="stSidebar"]');
+                if (!sidebar) return;
+                sidebar.classList.toggle('custom-sidebar-hidden');
+            };
+        })();
+        </script>
         """,
         unsafe_allow_html=True,
     )
