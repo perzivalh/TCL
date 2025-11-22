@@ -52,23 +52,33 @@ def main() -> None:
         div[title="Manage app"] {
             display: none !important;
         }
-        /* Ocultar toolbar superior completa (share, star, edit, github, menu) */
-        header [data-testid="stToolbar"],
-        header [data-testid="stDecoration"],
-        header [data-testid="stHeader"] div:nth-child(2) {
+        /* Mostrar toolbar pero ocultar botones de share/editar/github; mantener control de sidebar */
+        header [data-testid="stToolbar"] {
+            display: flex !important;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        header [data-testid="stToolbar"] button[title*="Share"],
+        header [data-testid="stToolbar"] button[title*="GitHub"],
+        header [data-testid="stToolbar"] button[title*="editar"],
+        header [data-testid="stToolbar"] button[title*="edit"],
+        header [data-testid="stToolbar"] button[title*="favorito"],
+        header [data-testid="stToolbar"] button[title*="favorite"],
+        header [data-testid="stToolbar"] button[title*="View app"] {
             display: none !important;
         }
-        /* Boton flotante para colapsar/mostrar barra lateral */
+        /* Posicionar el control de colapso de la barra lateral a media altura, sobresaliendo */
         div[data-testid="collapsedControl"] {
             position: fixed;
             top: 50%;
             left: 0;
-            transform: translate(-40%, -50%);
+            transform: translate(-35%, -50%);
             z-index: 1000;
             background: #142036;
             border: 1px solid #22365a;
             border-radius: 0 12px 12px 0;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            padding: 0.15rem;
         }
         div[data-testid="collapsedControl"] button {
             color: #e8eef7;
