@@ -20,22 +20,6 @@ def main() -> None:
             padding-left: 1.25rem;
             padding-right: 1.25rem;
         }
-        /* Barra lateral fija, sin colapso */
-        section[data-testid="stSidebar"] {
-            display: block !important;
-            transform: translateX(0) !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            min-width: 15rem;
-            max-width: 22rem;
-            padding-bottom: 2rem;
-            overflow-y: auto;
-        }
-        /* Mostrar control nativo de colapso/expansion */
-        div[data-testid="collapsedControl"] {
-            display: none !important;
-        }
-
         @media (max-width: 900px) {
             .block-container {
                 padding-left: 1rem;
@@ -53,12 +37,6 @@ def main() -> None:
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
             }
-            section[data-testid="stSidebar"] {
-                width: 100% !important;
-                max-width: none;
-                min-width: 0;
-                position: relative;
-            }
         }
         /* Ocultar badge/boton de estado (Manage app) en la esquina inferior derecha */
         div[data-testid="stStatusWidget"],
@@ -68,8 +46,8 @@ def main() -> None:
         button[aria-label*="Manage"],
         a[aria-label*="Manage"],
         div[aria-label*="Manage"] { display: none !important; }
-        /* Ocultar toolbar superior (share, estrella, etc.) */
-        header [data-testid="stToolbar"] { display: none !important; }
+        /* Mostrar toolbar superior para conservar el toggle de la barra lateral */
+        header [data-testid="stToolbar"] { display: flex !important; }
         </style>
         """,
         unsafe_allow_html=True,
