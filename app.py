@@ -7,7 +7,7 @@ from utils.layout import render_controls, render_header
 
 
 def main() -> None:
-    st.set_page_config(page_title="Visualizador del TCL", layout="wide")
+    st.set_page_config(page_title="Visualizador del TCL", layout="wide", initial_sidebar_state="expanded")
     st.markdown(
         """
         <style>
@@ -27,7 +27,10 @@ def main() -> None:
             padding-bottom: 2rem;
             overflow-y: auto;
         }
-        div[data-testid="collapsedControl"] { display: none !important; }
+        /* Mostrar control nativo de colapso/expansion */
+        div[data-testid="collapsedControl"] {
+            display: flex !important;
+        }
 
         @media (max-width: 900px) {
             .block-container {
@@ -57,7 +60,10 @@ def main() -> None:
         div[data-testid="stStatusWidget"],
         button[title*="Manage"],
         a[title*="Manage"],
-        div[title*="Manage"] { display: none !important; }
+        div[title*="Manage"],
+        button[aria-label*="Manage"],
+        a[aria-label*="Manage"],
+        div[aria-label*="Manage"] { display: none !important; }
         /* Ocultar toolbar superior (share, estrella, etc.) */
         header [data-testid="stToolbar"] { display: none !important; }
         </style>
