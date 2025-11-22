@@ -47,28 +47,25 @@ def main() -> None:
         }
         /* Ocultar badge/boton de estado (Manage app) en la esquina inferior derecha */
         div[data-testid="stStatusWidget"],
-        button[title="Manage app"],
-        a[title="Manage app"],
-        div[title="Manage app"] {
+        button[title*="Manage"],
+        a[title*="Manage"],
+        div[title*="Manage"] {
             display: none !important;
         }
-        /* Mostrar toolbar pero ocultar botones de share/editar/github; mantener control de sidebar */
-        header [data-testid="stToolbar"] {
-            display: flex !important;
-            align-items: center;
-            gap: 0.25rem;
-        }
+        /* Ocultar botones de share/editar/github/favoritos en la barra superior; mantener el toggle de la barra lateral */
         header [data-testid="stToolbar"] button[title*="Share"],
         header [data-testid="stToolbar"] button[title*="GitHub"],
-        header [data-testid="stToolbar"] button[title*="editar"],
         header [data-testid="stToolbar"] button[title*="edit"],
-        header [data-testid="stToolbar"] button[title*="favorito"],
-        header [data-testid="stToolbar"] button[title*="favorite"],
-        header [data-testid="stToolbar"] button[title*="View app"] {
+        header [data-testid="stToolbar"] button[title*="Edit"],
+        header [data-testid="stToolbar"] button[title*="favor"],
+        header [data-testid="stToolbar"] button[title*="Favor"] {
             display: none !important;
         }
-        /* Posicionar el control de colapso de la barra lateral a media altura, sobresaliendo */
+        /* Asegurar que el control de colapso de la barra lateral sea visible */
         div[data-testid="collapsedControl"] {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
             position: fixed;
             top: 50%;
             left: 0;
