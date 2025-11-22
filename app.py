@@ -22,6 +22,10 @@ def main() -> None:
         }
         /* Barra lateral fija, sin colapso */
         section[data-testid="stSidebar"] {
+            display: block !important;
+            transform: translateX(0) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
             min-width: 15rem;
             max-width: 22rem;
             padding-bottom: 2rem;
@@ -29,7 +33,7 @@ def main() -> None:
         }
         /* Mostrar control nativo de colapso/expansion */
         div[data-testid="collapsedControl"] {
-            display: flex !important;
+            display: none !important;
         }
 
         @media (max-width: 900px) {
