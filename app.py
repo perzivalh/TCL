@@ -45,7 +45,7 @@ def main() -> None:
                 width: 100% !important;
             }
         }
-        /* Transicion para mostrar/ocultar barra lateral desde un boton propio */
+        /* Transicion y clase para ocultar/mostrar la barra lateral */
         section[data-testid="stSidebar"] {
             transition: transform 0.35s ease, opacity 0.35s ease;
             will-change: transform, opacity;
@@ -68,8 +68,9 @@ def main() -> None:
             border-radius: 0 12px 12px 0;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
             color: #e8eef7;
-            padding: 0.45rem 0.6rem;
+            padding: 0.35rem 0.55rem;
             cursor: pointer;
+            display: none; /* se muestra via JS al encontrar el sidebar */
         }
         .sidebar-toggle-btn:hover {
             background: #1b2e4a;
@@ -81,7 +82,7 @@ def main() -> None:
         div[title*="Manage"] {
             display: none !important;
         }
-        /* Ocultar toolbar superior completa (share, estrella, etc.) */
+        /* Ocultar toolbar superior completa (share, estrella, etc.), pero dejar control de barra lateral aparte */
         header [data-testid="stToolbar"] {
             display: none !important;
         }
@@ -91,15 +92,31 @@ def main() -> None:
     )
     st.markdown(
         """
-        <button class="sidebar-toggle-btn" onclick="window.toggleSidebar && window.toggleSidebar()" aria-label="Mostrar u ocultar barra lateral">≡</button>
+        <button id="custom-sidebar-toggle" class="sidebar-toggle-btn" aria-label="Mostrar u ocultar barra lateral">‹</button>
         <script>
         (function() {
-            const root = window.parent.document;
-            window.toggleSidebar = function() {
-                const sidebar = root.querySelector('section[data-testid="stSidebar"]');
-                if (!sidebar) return;
+            function findSidebar() {
+                return window.parent.document.querySelector('section[data-testid="stSidebar"]');
+            }
+            function toggleSidebar() {
+                const sidebar = findSidebar();
+                const btn = window.parent.document.getElementById('custom-sidebar-toggle');
+                if (!sidebar || !btn) return;
                 sidebar.classList.toggle('custom-sidebar-hidden');
-            };
+                const hidden = sidebar.classList.contains('custom-sidebar-hidden');
+                btn.textContent = hidden ? '›' : '‹';
+            }
+            function initToggle() {
+                const btn = window.parent.document.getElementById('custom-sidebar-toggle');
+                const sidebar = findSidebar();
+                if (!btn || !sidebar) {
+                    setTimeout(initToggle, 400);
+                    return;
+                }
+                btn.style.display = 'flex';
+                btn.onclick = toggleSidebar;
+            }
+            initToggle();
         })();
         </script>
         """,
