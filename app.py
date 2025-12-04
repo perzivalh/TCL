@@ -1,9 +1,11 @@
 import streamlit as st
+import matplotlib.pyplot as plt
 
 from core.metrics import compute_differences, compute_empirical_stats, compute_theoretical_stats
 from core.simulation import generate_population, simulate_sample_means
 from core.visualization import plot_population_hist, plot_sample_means_hist
 from utils.layout import render_controls, render_header
+from utils.report import build_pdf_report
 
 
 def main() -> None:
@@ -81,7 +83,7 @@ def main() -> None:
             st.markdown("**Distribucion poblacional sintetica**")
             st.caption("Refleja la forma original definida por los parametros elegidos.")
             fig_population = plot_population_hist(population, dist_name, dist_params)
-            st.pyplot(fig_population, clear_figure=True, use_container_width=True)
+            st.pyplot(fig_population, clear_figure=False, use_container_width=True)
 
         with col2:
             st.markdown("**Distribucion de medias muestrales**")
@@ -89,7 +91,7 @@ def main() -> None:
             fig_means = plot_sample_means_hist(
                 sample_means, theoretical_mean=theoretical["mean"], theoretical_se=theoretical["se"]
             )
-            st.pyplot(fig_means, clear_figure=True, use_container_width=True)
+            st.pyplot(fig_means, clear_figure=False, use_container_width=True)
 
         st.markdown("---")
         st.subheader("Metricas teoricas vs empiricas")
@@ -120,6 +122,34 @@ def main() -> None:
                 f"{sample_empirical['std']:.4f}",
                 f"-{means_diff['std']:.4f}",
             )
+
+        report_bytes = build_pdf_report(
+            inputs={
+                "dist_name": dist_name,
+                "dist_params": dist_params,
+                "sample_size": sample_size,
+                "n_simulations": n_simulations,
+                "population_size": population_size,
+            },
+            pop_empirical=pop_empirical,
+            sample_empirical=sample_empirical,
+            theoretical=theoretical,
+            pop_diff=pop_diff,
+            means_diff=means_diff,
+            fig_population=fig_population,
+            fig_means=fig_means,
+        )
+        st.download_button(
+            "Descargar reporte PDF",
+            data=report_bytes,
+            file_name="reporte_tcl.pdf",
+            mime="application/pdf",
+            help="Incluye parametros usados, graficas y metricas teoricas/empiricas.",
+            use_container_width=True,
+        )
+        # Cerramos figuras para no acumular memoria en cada recomputo.
+        plt.close(fig_population)
+        plt.close(fig_means)
 
         st.markdown(
             "Al aumentar `n`, la dispersion de las medias disminuye y la curva normal se vuelve mas angosta. "
